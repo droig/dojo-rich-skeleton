@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Sistema Jugadores</title>
+<script type="text/javascript" src="lib/dojo/dojo/dojo.js"
+	data-dojo-config="'async':true,'parseOnLoad':true,'packages':[{'name':'maqetta','location':'../../maqetta'},{'name':'clipart','location':'../../clipart'},{'name':'shapes','location':'../../shapes'},{'name':'jquery-ui','location':'../../jquery-ui'},{'name':'yui','location':'../../yui'},{'name':'gridx','location':'../gridx'}]"></script>
+<script type="text/javascript">
+require([
+  "dijit/dijit",
+  "dojo/parser",
+  "dojo/dom",
+  "dijit/layout/BorderContainer",
+  "dijit/layout/ContentPane",
+  "dojox/layout/ContentPane",
+  "dijit/MenuBar",
+  "dijit/PopupMenuBarItem",
+  "dijit/MenuItem",
+  "dijit/Menu",
+  "dojox/io/xhrScriptPlugin",
+  "dijit/Tree",
+  "dojo/data/ItemFileReadStore"
+]);
+</script>
+
+
+<script type="text/javascript" src="js/app.js"></script>
+
+<style>
+@import "themes/claro/document.css";
+@import "themes/claro/claro.css";
+@import "themes/claro/claro.css";
+@import "lib/dojo/dojox/grid/enhanced/resources/claro/EnhancedGrid.css";
+@import "css/app.css";
+</style>
+
+</head>
+<body class="claro" dvFlowLayout="true" data-davinci-ws="collapse"
+	id="myapp">
+	
+	<!--div id="header">
+		<h1>Acme System</h1>
+	</div-->
+	
+	<div data-dojo-type="dijit.layout.BorderContainer" persist="false"
+		gutters="true"
+		style="min-width: 1em; min-height: 1em; z-index: 0; width: 100%; height: 100%;"
+		design="headline">
+		<div data-dojo-type="dijit.layout.ContentPane" extractContent="false"
+			preventCache="false" preload="false" refreshOnShow="false"
+			doLayout="true" region="top" splitter="true" maxSize="Infinity"
+			style="height: 50px;">
+				<div class="pad8"><h1>Acme System</h1></div>
+			</div>
+		<div data-dojo-type="dijit.layout.ContentPane" extractContent="false"
+			preventCache="false" preload="false" refreshOnShow="false"
+			doLayout="true" region="bottom" splitter="true" maxSize="Infinity"
+			style="FONT-FAMILY: 'AR PL UMing CN'; height: 50px;"></div>
+		<div data-dojo-type="dijit.layout.ContentPane" extractContent="false"
+			preventCache="false" preload="false" refreshOnShow="false"
+			doLayout="true" region="left" splitter="true" maxSize="Infinity"
+			style="width: 160px;">
+			
+				
+			<span data-dojo-type="dijit.Tree" model="menuModel" autoExpand="true" 
+				showRoot="false" childrenAttr="children" openOnClick="false" openOnDblClick="false"
+				persist="false" dndParams="onDndDrop,itemCreator,onDndCancel,checkAcceptance,checkItemAcceptance,dragThreshold,betweenThreshold"
+				dragThreshold="5"style="overflow: auto; width: 135px; height: 261px;" jsId="arbolMenu" onclick="panelChange"></span>
+		
+		</div>
+		<div data-dojo-type="dojox.layout.ContentPane" extractContent="false" id="mainPanel"
+			preventCache="true" preload="false" refreshOnShow="false" jsId="mainPanel" executeScripts="true"
+			doLayout="true" region="center" splitter="false" maxSize="Infinity">
+
+			<!-- contenido dinamico -->
+
+		</div>
+	</div>
+	<span class="dijitIconLoading"></span>
+</body>
+</html>

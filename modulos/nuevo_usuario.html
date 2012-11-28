@@ -1,0 +1,75 @@
+<div class="dijitDialogPaneContentArea">
+	<label style="z-index: 9999; position: absolute; left: 14px; top: 43px;">
+	Nombre</label>
+	 <label style="z-index: 9999; position: absolute; left: 14px; top: 12px;" for="rut_jugador">
+	   Rut</label>
+	 <label style="z-index: 9999; position: absolute; left: 14px; top: 76px;">
+	 Apellido</label>
+	 <label style="z-index: 9999; position: absolute; left: 14px; top: 112px;">
+	 E-Mail</label>
+	 <label style="z-index: 9999; position: absolute; left: 280px; top: 40px;">
+	 Edad</label>
+	 <label style="z-index: 9999; position: absolute; left: 15px; top: 184px;">
+	Sexo</label>
+	 <label style="z-index: 9999; position: absolute; left: 14px; top: 147px;">
+	 Telefono</label>
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox" 
+	 	required="true" 
+	 	regExp="[0-9]*" invalidMessage="Ingrese un valor válido" 
+	 	name="rut_jugador" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="z-index: 9999; position: absolute; left: 79px; top: 9px;" tabIndex="1"></input>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox"
+	 	
+	 	name="nombre" required="true" props="required: true" tabIndex="3" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="z-index: 9999; position: absolute; left: 79px; top: 40px;"></input>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox" name="apellido" 
+	 	regexp=".{2,30}" required="true"
+	 	tabIndex="5" intermediateChanges="false" trim="false" uppercase="false" 
+	 	lowercase="false" propercase="false" 
+	 	selectOnClick="false" style="z-index: 9999; position: absolute; left: 79px; top: 73px;"></input>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox" 
+	 	required="true"
+	 	regexp="[1-6][0-9]{1,1}" 
+	 	invalidMessage="La edad ingresada no es válida" 
+	 	name="edad" tabIndex="4" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="z-index: 9999; position: absolute; left: 326px; top: 37px; width: 24px;"></input>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox"
+	 	regexp="[a-zA-Z0-9]+[a-zA-Z0-9_.]*@[a-zA-Z0-9]+[a-zA-Z0-9_.]*\.[a-zA-Z]{2,6}" 
+	 	invalidMessage="ingrese una dirección válida"  required="true"
+	 	name="email" tabIndex="6" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="z-index: 9999; position: absolute; left: 79px; top: 109px;"></input>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox" tabIndex="7" 
+	 	regexp="[0-9]{7,10}" required="true"
+	 	invalidMessage="Ingrese un número telefónico válido"
+	 	intermediateChanges="false" trim="false" uppercase="false" lowercase="false" 
+	 	propercase="false" selectOnClick="false" 
+	 	style="z-index: 9999; position: absolute; left: 79px; top: 144px;" name="telefono"></input>
+	 
+	 <select data-dojo-type="dijit.form.Select" required="true" name="sexo" value="-Seleccionar-" 
+	 	tabIndex="8" intermediateChanges="false" trim="false" uppercase="false" 
+	 	lowercase="false" propercase="false" 
+	 	invalidMessage="El valor especificado no es v&amp;aacute;lido." 
+	 	style="z-index: 9999; position: absolute; left: 79px; top: 181px;">
+	 	
+		   <option value="">- Seleccionar -</option>
+		   <option value="Hombre"> Hombre</option>
+		   <option value="Mujer"> Mujer</option>
+	 </select>
+	 <label style="z-index: 9999; position: absolute; left: 280px; top: 12px;">
+	DV</label>
+	 
+	 <input type="text" data-dojo-type="dijit.form.ValidationTextBox" name="dv_jugador"
+	 	required="true" regExp="[0-9kK]" 
+	 	tabIndex="2" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="z-index: 9999; position: absolute; left: 326px; top: 9px; width: 24px;"></input>
+
+</div>
+
+<div class="dijitDialogPaneActionBar" style="margin-top: 209px; height: 40px">
+    <!-- button dojoType="dijit.form.Button" type="submit" id="ok">OK</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="jugadorDialog.onCancel();"
+            id="cancel">Cancel</button -->
+     <input type="button" data-dojo-type="dijit.form.Button" tabIndex="9" intermediateChanges="false" label="Guardar" iconClass="dijitIconSave" style="z-index: 999; position: absolute; left: 196px; top: 225px;" onclick="nuevoJugador()"></input>
+	 <input type="button" data-dojo-type="dijit.form.Button" tabIndex="10" intermediateChanges="false" label="Cancelar" style="z-index: 999; position: absolute; left: 286px; top: 225px;" onclick="jugadorDialog.hide()"></input>
+</div>
+ 

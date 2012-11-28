@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+ <title>Dijit Theme Tester</title>
+
+ <script>
+		var startTime = new Date();
+	</script>
+
+ <!-- required: a default theme --><link rel="stylesheet" href="../themes/claro/document.css"/>
+ <link rel="stylesheet" href="../../dijit/themes/claro/claro.css"/>
+ <link rel="stylesheet" href="../tests/css/dijitTests.css"/>
+
+ <style type="text/css">
+  html, body {
+    height : 100%;
+    width : 100%;
+    padding : 0;
+    border : 0;
+}
+
+  #main {
+    height : 100%;
+    width : 100%;
+    border : 0;
+}
+
+  #header {
+    margin : 0;
+}
+
+  #leftAccordion {
+    width : 25%;
+}
+
+  #bottomTabs {
+    height : 40%;
+}
+
+  -1width#hs {
+    width : 400px;
+    height : 40px;
+}
+
+  /* pre-loader specific stuff to prevent unsightly flash of unstyled content */
+#loader {
+    padding : 0;
+    margin : 0;
+    position : absolute;
+    top : 0;
+    left : 0;
+    width : 100%;
+    height : 100%;
+    background : #ededed;
+    z-index : 999;
+    vertical-align : middle;
+}
+
+  #loaderInner {
+    padding : 5px;
+    position : relative;
+    left : 0;
+    top : 0;
+    width : 175px;
+    background : #3c3;
+    color : #fff;
+}
+
+  #indTestBar, #setTestBar {
+    width : 400px;
+}
+
+  hr.spacer {
+    border : 0;
+    background-color : #ededed;
+    width : 80%;
+    height : 1px;
+}
+
+  /* rules used to test custom setting of TextBox padding */
+.inputPadding0 .dijitInputField {
+    padding : 0 !important;
+}
+
+  .inputPadding1 .dijitInputField {
+    padding : 1px !important;
+}
+
+  .inputPadding2 .dijitInputField {
+    padding : 2px !important;
+}
+
+  .inputPadding3 .dijitInputField {
+    padding : 3px !important;
+}
+
+  .inputPadding4 .dijitInputField {
+    padding : 4px !important;
+}
+
+  .inputPadding5 .dijitInputField {
+    padding : 5px !important;
+}
+
+
+ </style>
+
+ <!-- a check for stray globals: not needed! --><script type="text/javascript">
+		window.__globalList = { dojo: true, dijit: true, dojox: true, dojoConfig:true };
+		for(var i in window){
+			window.__globalList[i] = true;
+		}
+	</script>
+
+ <!-- required: dojo.js --><script type="text/javascript" src="../../dojo/dojo.js" data-dojo-config="parseOnLoad: false, async:true"></script>
+
+ <!-- only needed for alternate theme testing: --><script type="text/javascript" src="../tests/_testCommon.js"></script>
+
+ <script type="text/javascript">
+		require([
+			"dojo",
+			"dijit/dijit",
+			"dijit/dijit-all",
+			"dojo/parser",
+			"dojo/date/locale",
+			"dojo/data/ItemFileReadStore",
+			"dojo/dnd/Source"], function(dojo, dijit){
+				// various function ripped out of inline script type=dojo/* blocks
+				showDialog = function(){
+					var dlg = dijit.byId('dialog1');
+					dlg.show();
+					// avoid (trying to) restore focus to a closed menu, go to MenuBar instead
+					dlg._savedFocus = dojo.byId("header");
+				};
+				
+				showDialogAb = function(){
+					var dlg = dijit.byId('dialogAB');
+					dlg.show();
+					// avoid (trying to) restore focus to a closed menu, go to MenuBar instead
+					dlg._savedFocus = dojo.byId("header");
+				};
+
+				//var setTextBoxPadding;
+				// current setting (if there is one) to override theme default padding on TextBox based widgets
+				var currentInputPadding = "";
+				
+				setTextBoxPadding = function(){
+					// summary:
+					//		Handler for when a MenuItem is clicked to set non-default padding for
+					//		TextBox widgets
+
+					// Effectively ignore clicks on the	 currently checked MenuItem
+					if(!this.get("checked")){
+						this.set("checked", true);
+					}
+
+					// val will be "theme default", "0px", "1px", ..., "5px"
+					var val = this.get("label");
+
+					// Set class on body to get requested padding, and remove any previously set class
+					if(currentInputPadding){
+						dojo.removeClass(dojo.body(), currentInputPadding);
+						currentInputPadding = "";
+					}
+					if(val != "theme default"){
+						currentInputPadding = "inputPadding" + val.replace("px", "");
+						dojo.addClass(dojo.body(), currentInputPadding);
+					}
+
+					// Clear previously checked MenuItem (radio-button effect).
+					dojo.forEach(this.getParent().getChildren(), function(mi){
+						if(mi != this){
+							mi.set("checked", false);
+						}
+					}, this);
+				};
+
+				logStrayGlobals = function(){
+					// summary:
+					//		Print all the global variables that we've created [by mistake] inside of dojo
+					var strayGlobals = [];
+					for(var i in window){
+						if(!window.__globalList[i]){
+							strayGlobals.push(i);
+						}
+					}
+					if(strayGlobals.length){
+						console.warn("Stray globals: " + strayGlobals.join(", "));
+					}
+				};
+		
+				logWidgets = function(){
+					// summary:
+					//		Print all the widgets to console
+					console.log("Widgets in registry:");
+					dijit.registry.forEach(function(w){
+						console.log(w);
+					});
+				};
+		
+				tearDown = function(){
+					// summary:
+					//		Destroy all widgets, top down, and then check for any orphaned widgets
+					dijit._destroyAll();
+					logWidgets();
+				};
+		
+				dojo.ready(function(){
+					var loadCompleteTime = +new Date();
+					console.log("Total load time: " + (loadCompleteTime - startTime) + "ms");
+		
+					dojo.parser.parse(dojo.byId('container'));
+					console.info("Total parse time: " + (+new Date() - loadCompleteTime) + "ms");
+		
+					dojo.byId('loaderInner').innerHTML += " done.";
+					setTimeout(function hideLoader(){
+						dojo.fadeOut({ 
+							node: 'loader', 
+							duration:500,
+							onEnd: function(n){
+								n.style.display = "none";
+							}
+						}).play();
+					}, 250);
+		
+					logStrayGlobals();
+		
+					// Fill in menu/links to get to other themes.		
+					// availableThemes[] is just a list of 'official' dijit themes, you can use ?theme=String
+					// for 'un-supported' themes, too. (eg: yours)
+					var availableThemes = [
+						{ theme:"claro", author:"Dojo", baseUri:"../themes/" },
+						{ theme:"tundra", author:"Dojo", baseUri:"../themes/" },
+						{ theme:"soria", author:"nikolai", baseUri:"../themes/" },
+						{ theme:"nihilo", author:"nikolai", baseUri:"../themes/" }
+					];
+		
+					var tmpString='';
+					dojo.forEach(availableThemes,function(theme){
+						tmpString += 
+							'<a href="?theme='+theme.theme+'">'+theme.theme+'</a>(' +
+							'<a href="?theme='+theme.theme+'&amp;dir=rtl">RTL</a>' +
+							'<a href="?theme='+theme.theme+'&amp;a11y=true">high-contrast</a>' +
+							'<a href="?theme='+theme.theme+'&amp;dir=rtl&amp;a11y=true">RTL+high-contrast</a>)' +
+							' - by: '+theme.author+' <br>';
+						dijit.byId('themeMenu').addChild(new dijit.MenuItem({
+							label: theme.theme,
+							onClick: function(){ location.search = "?theme=" + theme.theme; }
+						}))
+					});
+					dojo.byId('themeData').innerHTML = tmpString;
+				});
+		
+				dojo.ready(function(){
+					// It's the server's responsibility to localize the date displayed in the (non-edit) version of an InlineEditBox,
+					// but since we don't have a server we'll hack it in the client
+					dijit.byId("backgroundArea").set('value', dojo.date.locale.format(new Date(2005, 11, 30), { selector: 'date' }));
+		
+					var nineAm = new Date(0);
+					nineAm.setHours(9);
+					dijit.byId("timePicker").set('value', dojo.date.locale.format(nineAm, { selector: 'time' }));
+				});
+		
+				/***
+				dojo.ready(function(){
+					// use "before advice" to print log message each time resize is called on a layout widget
+					var origResize = dijit.layout._LayoutWidget.prototype.resize;
+					dijit.layout._LayoutWidget.prototype.resize = function(mb){
+						console.log(this + ": resize({w:"+ mb.w + ", h:" + mb.h + "})");
+						origResize.apply(this, arguments);
+					};
+		
+					// content pane has no children so just use dojo's builtin after advice
+					dojo.connect(dijit.layout.ContentPane.prototype, "resize", function(mb){
+						console.log(this + ": resize({w:"+ mb.w + ", h:" + mb.h + "})");
+					});
+				});
+				***/
+			});
+	</br>
+</script>
+<body class="claro">
+ <!-- basic preloader: --><div id="loader"><div id="loaderInner" style="direction:ltr;">Loading themeTester ... </div></div>
+
+ <!-- data for tree and combobox --><div data-dojo-type="dojo.data.ItemFileReadStore" data-dojo-id="continentStore" data-dojo-props="url:'../tests/_data/countries.json'"></div>
+ <div data-dojo-id="continentModel" data-dojo-type="dijit.tree.ForestStoreModel" data-dojo-props="store:continentStore, query:{type:&quot;continent&quot;}"></div></body>
+ <div data-dojo-type="dojo.data.ItemFileReadStore" data-dojo-id="stateStore" data-dojo-props="url:'../tests/_data/states.json'"></div>
+ <!-- contentMenu popup --><!-- redundant display:none required here? --><div data-dojo-type="dijit.Menu" id="submenu1" data-dojo-props="contextMenuForWindow:true, style:&quot;display:none&quot;" style="display: none;">
+  <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){ alert('Hello world'); }">Enabled Item</div>
+  <div data-dojo-type="dijit.MenuItem" data-dojo-props="disabled:true">Disabled Item</div>
+  <div data-dojo-type="dijit.MenuSeparator"></div>
+  <div data-dojo-type="dijit.MenuItem" data-dojo-props="iconClass:'dijitIconCut', onClick: function(){ alert('not actually cutting anything. Just a test!'); }">Cut</div>
+  <div data-dojo-type="dijit.MenuItem" data-dojo-props="iconClass:'dijitIconCopy', onClick:function(){ alert('not actually copying anything, just a test!'); }">Copy</div>
+  <div data-dojo-type="dijit.MenuItem" data-dojo-props="iconClass:'dijitIconPaste', onClick: function(){ alert('not actually pasting anything, just a test!'); }">Paste</div>
+  <div data-dojo-type="dijit.MenuSeparator"></div>
+  <div data-dojo-type="dijit.PopupMenuItem">
+   <span>Enabled Submenu</span>
+   <div data-dojo-type="dijit.Menu" id="submenu2">
+    <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){ alert('Submenu 1!') }">Submenu Item One</div>
+    <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: function(){ alert('Submenu 2!') }">Submenu Item Two</div>
+    <div data-dojo-type="dijit.PopupMenuItem">
+     <span>Deeper Submenu</span>
+     <div data-dojo-type="dijit.Menu" id="submenu4">
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){alert('Sub-submenu 1!')}">Sub-sub-menu Item One</div>
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){alert('Sub-submenu 2!')}">Sub-sub-menu Item Two</div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div data-dojo-type="dijit.PopupMenuItem" data-dojo-props="disabled:true">
+   <span>Disabled Submenu</span>
+   <div data-dojo-type="dijit.Menu" id="submenu3" style="display: none;">
+    <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){alert('Submenu 1!')}">Submenu Item One</div>
+    <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){alert('Submenu 2!')}">Submenu Item Two</div>
+   </div>
+  </div>
+  <div data-dojo-type="dijit.PopupMenuItem">
+   <span>Different popup</span>
+   <div data-dojo-type="dijit.ColorPalette"></div>
+  </div>
+  <div data-dojo-type="dijit.PopupMenuItem">
+   <span>Different popup</span>
+   <div data-dojo-type="dijit.Calendar"></div>
+  </div>
+ </div>
+ <!-- end contextMenu --><div id="main" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="liveSplitters:false, design:'sidebar'">
+
+  <div id="header" data-dojo-type="dijit.MenuBar" data-dojo-props="region:'top'">
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="file">
+    <span>File</span>
+    <div data-dojo-type="dijit.Menu" id="fileMenu">
+     <div data-dojo-type="dijit.MenuItem" id="globals" data-dojo-props="onClick: logStrayGlobals">Log globals</div>
+     <div data-dojo-type="dijit.MenuItem" id="widgets" data-dojo-props="onClick: logWidgets">Log widgets</div>
+     <div data-dojo-type="dijit.MenuItem" id="destroy" data-dojo-props="iconClass:'dijitIconDelete', onClick:tearDown">Destroy All</div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="edit">
+    <span>Edit</span>
+    <div data-dojo-type="dijit.Menu" id="editMenu">
+     <div data-dojo-type="dijit.MenuItem" id="cut" data-dojo-props="&quot;"></div>
+
+     Cut</div>
+     <div data-dojo-type="dijit.MenuItem" id="copy" data-dojo-props="&quot;"></div>
+
+     Copy</div>
+     <div data-dojo-type="dijit.MenuItem" id="paste" data-dojo-props="iconClass:'dijitIconPaste'"></div>Paste</div>
+     <div data-dojo-type="dijit.MenuSeparator" id="separator"></div>
+     <div data-dojo-type="dijit.MenuItem" id="undo" data-dojo-props="iconClass:'dijitIconUndo'">Undo</div>
+    </div>
+   </meta>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="view">
+    <span>View</span>
+    <div data-dojo-type="dijit.Menu" id="viewMenu">
+     <div data-dojo-type="dijit.MenuItem">Normal</div>
+     <div data-dojo-type="dijit.MenuItem">Outline</div>
+     <div data-dojo-type="dijit.PopupMenuItem">
+      <span>Zoom</span>
+      <div data-dojo-type="dijit.Menu" id="zoomMenu">
+       <div data-dojo-type="dijit.MenuItem">50%</div>
+       <div data-dojo-type="dijit.MenuItem">75%</div>
+       <div data-dojo-type="dijit.MenuItem">100%</div>
+       <div data-dojo-type="dijit.MenuItem">150%</div>
+       <div data-dojo-type="dijit.MenuItem">200%</div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="themes">
+    <span>Themes</span>
+    <div data-dojo-type="dijit.Menu" id="themeMenu"></div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="dialogs">
+    <span>Dialogs</span>
+    <div data-dojo-type="dijit.Menu" id="dialogMenu">
+     <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: showDialog">slow loading</div>
+     <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick: showDialogAb">action bar</div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="inputPadding">
+    <span>TextBox Padding</span>
+    <div data-dojo-type="dijit.Menu" id="inputPaddingMenu">
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding, checked:true">theme default</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">0px</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">1px</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">2px</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">3px</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">4px</div>
+     <div data-dojo-type="dijit.CheckedMenuItem" data-dojo-props="onClick:setTextBoxPadding">5px</div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" id="help">
+    <span>Help</span>
+    <div data-dojo-type="dijit.Menu" id="helpMenu">
+     <div data-dojo-type="dijit.MenuItem">Help Topics</div>
+     <div data-dojo-type="dijit.MenuItem">About Dijit</div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.PopupMenuBarItem" data-dojo-props="disabled:true">
+    <span>Disabled</span>
+    <div data-dojo-type="dijit.Menu">
+     <div data-dojo-type="dijit.MenuItem">You should not see this</div>
+    </div>
+   </div>
+   <div data-dojo-type="dijit.MenuBarItem" data-dojo-props="onclick: function(){ alert('no submenu, just a clickable MenuItem'); }">
+				Click me!
+			</div>
+   <script type="text/javascript" data-dojo-config="'async':true,'parseOnLoad':true,'packages':[{'name':'maqetta','location':'../../maqetta'},{'name':'clipart','location':'../../clipart'},{'name':'shapes','location':'../../shapes'},{'name':'jquery-ui','location':'../../jquery-ui'},{'name':'yui','location':'../../yui'},{'name':'gridx','location':'../gridx'}]" src="../../dojo/dojo.js"></script>
+ </head>
+
+  <div data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region:'leading', splitter:true, minSize:20" style="width: 300px;" id="leftAccordion">
+
+   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:&quot;Popups and Alerts&quot;"><div style="padding:8px">
+    <h2>Tooltips</h2>
+    <ul>
+     <li>
+     <span id="ttRich"><b>rich</b> <i>text</i> tooltip</span>
+     <span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'ttRich'" style="display:none;">
+						Embedded <b>bold</b> <i>RICH</i> text <span style="color:#309; font-size:x-large;">weirdness!</span>
+     </span>
+     </li>
+
+     <li><a id="ttOne" href="#bogus">anchor tooltip</a>
+     <span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:&quot;ttOne&quot;" style="display:none;">tooltip on anchor</span>
+     </li>
+    </ul>
+
+    <table style="width: 100%;">
+     <tr>
+      <td></td>
+      <td>
+       <div id="ttBelow">tooltip below</div>
+       <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'ttBelow', position:['below']" style="display:none; width: 100px;">I'm <i>below</i>!</div>
+      </td>
+      <td></td>
+     </tr>
+     <tr>
+      <td>
+       <div id="ttRight">tooltip after</div>
+       <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'ttRight', position:['after']" style="display:none;">I'm on the <i>right</i>!<br>(or left on RTL systems)</br>
+      </div>
+      <td></td>
+      <td>
+       <div id="ttLeft">tooltip before</div>
+       <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'ttLeft', position:['before','after']" style="display:none;">I'm on the <i>left</i>!<br>(or right on RTL systems)</br>
+      </div>
+     </td>
+     <tr>
+      <td></td>
+      <td>
+       <div id="ttAbove">tooltip above</div>
+       <div data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'ttAbove', position:['above']" style="display:none;">I'm <i>above</i>!</div>
+      </td>
+      <td></td>
+     </tr>
+    </td>
+
+    <hr class="spacer">
+
+    <h2>Dialogs</h2>
+    <ul>
+     <li><a href="#" onclick="dijit.byId('dialog1').show()">slow loading modal dialog</a></li>
+     <li><a href="#" onclick="dijit.byId('dialogAB').show()">modal dialog w/action bar</a></li>
+    </ul>
+
+    <div data-dojo-type="dijit.form.DropDownButton">
+     <span>Show Tooltip Dialog</span>
+     <div data-dojo-type="dijit.TooltipDialog" id="tooltipDlg" data-dojo-props="'"></div>
+      <table>
+       <tr>
+        <td><label for="user">User:</label></td>
+        <td><input data-dojo-type="dijit.form.TextBox" type="text" id="user" name="user"></input>
+       </td>
+       <tr>
+        <td><label for="pwd">Password:</label></td>
+        <td><input data-dojo-type="dijit.form.TextBox" type="password" id="pwd" name="pwd"></input>
+       </td>
+       <tr>
+        <td colspan="2">
+         <button data-dojo-type="dijit.form.Button" type="submit" name="submit">Login</button>
+       </td>
+      </tr>
+     </tr>
+    </tr>
+   </table>
+   </div>
+
+   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:&quot;Tree&quot;">
+    <!-- tree widget --><div data-dojo-type="dijit.Tree" data-dojo-props="model: continentModel, query:{ type:'continent'}, label:'Continents', openOnClick:true"></div>
+   </div>
+
+   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Rootless Tree'">
+    <div id="rootlessTree" data-dojo-type="dijit.Tree" data-dojo-props="&quot;"></div>
+
+
+
+    </div>
+   </hr>
+
+   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="selected:true, title:&quot;Calendar&quot;">
+    <!-- calendar widget pane --><input id="calendar1" data-dojo-type="dijit.Calendar">
+   </input>
+
+   <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:&quot;Color Picker&quot;">
+    <p>
+					Selecting a color will change the background color of the page.
+					Use this to test how tooltips and drop downs appear with different backgrounds.
+				</p>
+    <h2 class="testHeader">3x4</h2>
+    <script>
+					function setBackground(color){
+						dojo.query('.dijitAccordionBody').style('background', color);
+						dojo.query('.dijitTabPaneWrapper').style('background', color);
+					}
+				</script>
+    <div data-dojo-type="dijit.ColorPalette" data-dojo-props="palette:'3x4', onChange:setBackground"></div>
+    <h2 class="testHeader">7x10</h2>
+    <div data-dojo-type="dijit.ColorPalette" data-dojo-props="onChange:setBackground"></div>
+   </div>
+  </div><!-- end AccordionContainer --><!-- top tabs (marked as "center" to take up the main part of the BorderContainer) --><div data-dojo-type="dijit.layout.TabContainer" data-dojo-props="region:'center', tabStrip:true" id="topTabs">
+
+   <div id="basicFormTab" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title:'Basic Form Widgets', style:'padding:10px;display:none;'">
+
+    <h2>Buttons</h2>
+    <p>Buttons can do an action, display a menu, or both:</p>
+
+				Enabled:
+
+				<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'dijitIconTask', onClick:function(){ console.debug('clicked simple') }">
+					Simple
+				</button>
+
+    <div data-dojo-type="dijit.form.DropDownButton" data-dojo-props="iconClass:'dijitIconEdit'">
+     <span>Drop Down</span>
+     <div data-dojo-type="dijit.Menu" id="editMenu1" style="display: none;">
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+
+      Cut</div>
+
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+
+      Copy</div>
+
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+
+      Paste</div>
+     </div>
+    </tr>
+
+    <div data-dojo-type="dijit.form.ComboButton" data-dojo-props="iconClass:&quot;dijitIconSave&quot;, optionsTitle:&quot;save options&quot;, onClick:function(){ console.log(&quot;clicked combo save&quot;); }">
+     <span>Combo</span>
+     <div data-dojo-type="dijit.Menu" id="saveMenu1" style="display: none;">
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+
+      Save</div>
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+      Save As</div>
+     </table>
+    </div>
+
+    <div data-dojo-type="dijit.form.ToggleButton" data-dojo-props="&quot;"></div>
+
+    Toggle </div>
+
+    <hr class="spacer">
+
+				Disabled:
+
+				<button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:&quot;dijitIconTask&quot;, disabled:true" disabled="disabled">
+					Simple
+				</button>
+
+    <div data-dojo-type="dijit.form.DropDownButton" data-dojo-props="iconClass:&quot;dijitIconEdit&quot;, disabled:true">
+     <span>Drop Down</span>
+     <ul data-dojo-type="dijit.Menu" id="editMenu2" style="display: none;">
+      <li data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></li>
+
+      Cut</ul>
+
+      <li data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></li>
+
+      Copy</div>
+
+      <li data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></li>
+
+      Paste</hr>
+     </div>
+    </html>
+
+    <div data-dojo-type="dijit.form.ComboButton" data-dojo-props="iconClass:'dijitIconSave', optionsTitle:'save options', disabled:true">
+     <span>Combo</span>
+     <div data-dojo-type="dijit.Menu" id="saveMenu2" style="display: none;">
+      <div data-dojo-type="dijit.MenuItem" data-dojo-props="&quot;"></div>
+
+      Save</div>
+      <div data-dojo-type="dijit.MenuItem" onClick="console.debug('not actually saving anything, just a test!')">
+							Save As
+						</div>
+     </div>
